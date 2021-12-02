@@ -65,17 +65,7 @@ class Generator(nn.Module):
         feat_64 = self.up_64(feat_32)
         feat_128 = self.up_128(feat_64)
 
-        out = self.to_128(feat_128)
-
-        # randomly blacken a pixel.
-        out[
-            torch.arange(64),
-            :,
-            torch.randint(0, 128, (64,)),
-            torch.randint(0, 128, (64,)),
-        ] = -1
-
-        return out
+        return self.to_128(feat_128)
 
 
 def DownBlock(in_planes, out_planes, dropout=0.0):

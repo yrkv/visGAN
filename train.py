@@ -160,6 +160,13 @@ def train(args):
             noise = torch.randn(b_size, config['nz'], device=device)
 
             fake_images = netG(noise)
+
+            # randomly gray out a pixel in each generated image.
+            i, j = torch.randint(0, 128, (2, b_size))
+            drop_mask = torch.ones_like(fake_images)
+            drop_mask[torch.arange(b_size), :, i, j] = 0
+            fake_images = fake_images * drop_mask
+
             #TODO: test DiffAugment
             #real_images = DiffAugment(real_images, policy=policy)
             #fake_images = DiffAugment(fake_images, policy=policy)
