@@ -65,7 +65,14 @@ class Generator(nn.Module):
         feat_64 = self.up_64(feat_32)
         feat_128 = self.up_128(feat_64)
 
-        return self.to_128(feat_128)
+        out = self.to_128(feat_128)
+
+        # randomly gray out a small square in each generated image.
+        drop_mask = torch.ones_like(out)
+        for i in range(out.size(0)):
+            y, x = torch.randint(10, 118, (2,))
+            drop_mask[i, :, y-5:y+5, x-5:x+5] = 0
+        return out * drop_mask
 
 
 def DownBlock(in_planes, out_planes, dropout=0.0):
