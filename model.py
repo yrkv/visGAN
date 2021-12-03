@@ -71,7 +71,7 @@ class Generator(nn.Module):
         drop_mask = torch.ones_like(out)
         for i in range(out.size(0)):
             y, x = torch.randint(10, 118, (2,))
-            drop_mask[i, :, y-1:y+1, x-1:x+1] = 0
+            drop_mask[i, :, y-2:y+2, x-2:x+2] = 0
         return out * drop_mask
 
 
