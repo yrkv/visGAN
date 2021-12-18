@@ -20,6 +20,7 @@ import pandas as pd
 from glob import glob
 from tqdm import tqdm
 
+from util import *
 import model
 #from diffaug import DiffAugment
 #policy = 'color,translation'
@@ -40,21 +41,6 @@ model_config_args = {
     #'g_skip',
 }
 
-
-#def set_dropout_p(model, p):
-#    def to_apply(m):
-#        classname = m.__class__.__name__
-#        if classname.find('Dropout') != -1:
-#            m.p = p
-#    model.apply(to_apply)
-
-
-
-def near_one_like(input, rand_range=0.1):
-    return 1 - torch.rand_like(input)*rand_range
-
-def near_zero_like(input, rand_range=0.1):
-    return torch.rand_like(input)*rand_range
 
 def train_d(net, data, label="real"):
     pred = net(data)
@@ -106,9 +92,9 @@ def train(args):
     name = args['name']
     if args['name'] is None:
         name = ''.join(np.random.choice(list(string.ascii_lowercase), size=10, replace=False))
+        print(f'experiment name: {name}')
     save_dir = os.path.join(args['results_dir'], name)
 
-    #percept.to(device)
 
     # make sure output directories exist
     os.makedirs(os.path.join(save_dir, 'checkpoints'), exist_ok=True)
@@ -164,6 +150,11 @@ def train(args):
             #TODO: test DiffAugment
             #real_images = DiffAugment(real_images, policy=policy)
             #fake_images = DiffAugment(fake_images, policy=policy)
+
+            for _ in range(5):
+                fake_images = drop_square(fake_images, size=4)
+                real_images = drop_square(real_images, size=4)
+
 
             # train Discriminator
             netD.zero_grad()
